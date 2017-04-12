@@ -1,4 +1,4 @@
-/* This is modified from an example of how to integrate maximilain into openFrameworks,
+ /* This is modified from an example of how to integrate maximilain into openFrameworks,
  including using audio received for input and audio requested for output.
  
  
@@ -32,7 +32,7 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     ofSetFrameRate(60);
     
-    drumtrack.load(ofToDataPath("beat2.wav"));
+    drumtrack.load(ofToDataPath("sais.wav"));
     
     sampleRate 	= 44100; /* Sampling Rate */
     bufferSize	= 512; /* Buffer Size. you have to fill this buffer with sound using the for loop in the audioOut method */
@@ -111,18 +111,18 @@ void ofApp::update(){
     //define kick and snare vars
     bool kBool, sBool;
     float kMag, sMag;
-    std::tie(kBool, kMag) = isHit(fft.magnitudes, 0, 4, 0.1);
-    std::tie(sBool, sMag) = isHit(fft.magnitudes, 30, 35, 0.1);
+    std::tie(kBool, kMag) = isHit(fft.magnitudes, 5, 8, 0.1);
+    std::tie(sBool, sMag) = isHit(fft.magnitudes, 30, 40, 0.1);
     //if kick = true
     if (kBool) {
         cout<<kMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*40);
+        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*100);
     }
     
     //if snare = true
     if(sBool) {
         cout<<sMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 4), sMag*120);
+        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*200);
     }
     
     
