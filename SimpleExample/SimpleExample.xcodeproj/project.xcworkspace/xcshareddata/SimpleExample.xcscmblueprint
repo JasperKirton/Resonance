@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "A4F968250B78BC3831C0C120578A7D35A80555B2",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "A4F968250B78BC3831C0C120578A7D35A80555B2" : 9223372036854775807,
+    "05EF0EC787D7327221213A6E6F721FDE825CD6F6" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "9074B2F3-19CE-45A4-927F-4AF41E95C821",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "A4F968250B78BC3831C0C120578A7D35A80555B2" : "CreativeProjects_2\/",
+    "05EF0EC787D7327221213A6E6F721FDE825CD6F6" : "..\/addons\/ofxBullet"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "SimpleExample",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "SimpleExample\/SimpleExample.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/NickHardeman\/ofxBullet.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "05EF0EC787D7327221213A6E6F721FDE825CD6F6"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "gitlab.doc.gold.ac.uk:jkirt001\/CreativeProjects_2.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A4F968250B78BC3831C0C120578A7D35A80555B2"
+    }
+  ]
+}
