@@ -5,7 +5,7 @@
  */
 
 #include "ofApp.h"
-//#include "maximilian.h"/* include the lib */
+#include "maximilian.h"/* include the lib */
 #include "time.h"
 
 
@@ -17,15 +17,6 @@ void ofApp::setup(){
     sender.setup(HOST, SENDPORT);
     receiver.setup(RECEIVEPORT);
     
-    /*
-    //samples from http://freesound.org
-    samp.load(ofToDataPath("2630__Jovica__133_bpm_ATTACK_LOOP_04_electrified_analog_kit_variation_16_mono.wav"));
-    samp2.load(ofToDataPath("24620__anamorphosis__GMB_Kantilan_1.wav"));
-    samp3.load(ofToDataPath("26393__brfindla__Calango1berimbau.wav"));
-    samp4.load(ofToDataPath("68373__juskiddink__Cello_open_string_bowed.wav"));
-    samp5.load(ofToDataPath("71515__Microscopia__Wilhelm_Bruder_Sohne_Organ.wav"));
-    samp5.load(ofToDataPath("sine1sec.wav"));
-    /*/
     
     ofEnableAlphaBlending();
     ofSetupScreen();
@@ -38,22 +29,6 @@ void ofApp::setup(){
     bufferSize	= 512; /* Buffer Size. you have to fill this buffer with sound using the for loop in the audioOut method */
     
     
-    /*
-    ts = new maxiTimePitchStretch<grainPlayerWin, maxiSample>(&samp);
-    ts2 = new maxiTimePitchStretch<grainPlayerWin, maxiSample>(&samp2);
-    ts3 = new maxiTimePitchStretch<grainPlayerWin, maxiSample>(&samp3);
-    ts4 = new maxiTimePitchStretch<grainPlayerWin, maxiSample>(&samp4);
-    ts5 = new maxiTimePitchStretch<grainPlayerWin, maxiSample>(&samp5);
-    stretches.push_back(ts);
-    stretches.push_back(ts2);
-    stretches.push_back(ts3);
-    stretches.push_back(ts4);
-    stretches.push_back(ts5);
-    speed = 1;
-    grainLength = 0.05;
-    current=0;
-    /*/
-     
     fft.setup(1024, 512, 256);
     oct.setup(44100, 1024, 10);
     
@@ -141,19 +116,9 @@ void ofApp::draw(){
      Clever people don't do this. This bit of code shows that by default, each signal is going to flip
      between -1 and 1. You need to account for this somehow. Get the absolute value for example.
      */
+    
     /*
     ofSetColor(160,32,240, 150);
-    ofDrawBitmapString(":: ofxMaxim Granular Timestretching Example ::", 10,20);
-    ofDrawBitmapString("Move the mouse left to right to change playback speed and direction.", 10,40);
-    ofDrawBitmapString("Move the mouse up and down to change the grain length.", 10,60);
-    ofDrawBitmapString("Click to cycle through samples.", 10,80);
-    
-    stringstream s;
-    s << "Speed: " << speed;
-    ofDrawBitmapString(s.str(), 10,750);
-    s.str("");
-    s << "Grain length: " << round(grainLength*1000.0) << " ms";
-    ofDrawBitmapString(s.str(), 180,750);
     
     ofNoFill();
     for(int i=0; i < oct.nAverages; i++) {
@@ -167,7 +132,7 @@ void ofApp::draw(){
         ofDrawSphere(0, 0, i * 5);
         glPopMatrix();
     }
-     /*/
+    /*/
     
     /*
     for (int i = 0; i < oct.nAverages; i++){
@@ -184,17 +149,30 @@ void ofApp::draw(){
    // ofLog()<< ofToString(isHit(oct.averages, 0, 10, 0.15));
     
     //particle code
-    ofPushMatrix();
+    //ofSetColor(255);
+    //ofSetColor(160,32,240, 150);
+    
+    for(int i=0; i < oct.nAverages; i++) {
+    Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
+                   100 + ((int)(ofGetFrameNum() * 1.4) % 255),
+                                       ofGetFrameNum() % 255);
+                   //oct.averages[i] / 20.0 * 255.0);
+    }
+    
     ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2, 0);
-    ofSetColor(255);
+    ofNoFill();
+    glPushMatrix();
+    Particle::drawAll();
+    glPopMatrix();
+    
+    
     //glPointSize(2);
     //glEnable(GL_POINT_SMOOTH);
-    Particle::drawAll();
-    ofPopMatrix();
+
     
-    ofSetColor(255);
+    //ofSetColor(255);
     // ofRect(100, 100, 100, 100);
-    ofSetColor(255);
+    //ofSetColor(255);
     //ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
     
     

@@ -16,6 +16,7 @@
 typedef hannWinFunctor grainPlayerWin;
 
 
+
 class ofApp : public ofBaseApp{
     
 public:

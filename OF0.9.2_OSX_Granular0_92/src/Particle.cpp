@@ -6,6 +6,9 @@ Particle::forces;
 vector<Particle>
 Particle::particles;
 
+ofColor
+Particle::particleColour;
+
 ofVec2f
 Particle::centeringForce,
 Particle::globalOffset,
@@ -44,6 +47,7 @@ void Particle::drawAll() {
     mesh.setMode(OF_PRIMITIVE_POINTS);
     for(int i = 0; i < particles.size(); i++) {
         mesh.addVertex(particles[i].position);
+        mesh.addColor(particles[i].particleColour);
     }
     mesh.drawVertices();
 }
@@ -58,6 +62,8 @@ void Particle::updateAll(float dt = 1. / 60.) {
     globalOffset += confusion * direction * dt;
     age += dt;
     forces.clear();
+    
+    
 }
 
 void Particle::addForce(ofVec2f position, float magnitude) {

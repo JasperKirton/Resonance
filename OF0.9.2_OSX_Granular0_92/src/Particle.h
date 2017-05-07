@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 
+
 inline void randomize(ofVec2f& v) {
     v.x = ofRandomf();
     v.y = ofRandomf();
@@ -20,6 +21,7 @@ public:
 
 class Particle {
 public:
+    static ofColor particleColour;
     static ofVec2f centeringForce, globalOffset, externalForce;
     static float speed, spread, viscosity, independence, rebirthRadius, neighborhood, confusion, indecision, age, globalDirection;
     static vector<Particle> particles;
