@@ -260,13 +260,30 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+
+
+void ofApp::keyPressed(int key) {
     
     isTraining=!isTraining;
     
     //cout << isTraining;
     
+    if(key == 'f')
+        ofToggleFullscreen();
+    
+    if (key == 'r')
+        ofBackground(204, 0, 0);
+    
+    if (key == 'b')
+        ofBackground(0, 0, 200);
+    
+    if (key == 'g')
+        ofBackground(0, 51, 0);
+    
+    if (key == OF_KEY_DOWN)
+        ofBackground(0, 0, 0);
 }
+
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
