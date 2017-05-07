@@ -13,7 +13,7 @@
 void ofApp::setup(){
     
     /* This is stuff you always need.*/
-    
+    // test add
     sender.setup(HOST, SENDPORT);
     receiver.setup(RECEIVEPORT);
     
