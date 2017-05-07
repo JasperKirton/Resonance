@@ -152,12 +152,13 @@ void ofApp::draw(){
     //ofSetColor(255);
     //ofSetColor(160,32,240, 150);
     
+    /*
     for(int i=0; i < oct.nAverages; i++) {
     Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
                    100 + ((int)(ofGetFrameNum() * 1.4) % 255),
-                                       ofGetFrameNum() % 255);
-                   //oct.averages[i] / 20.0 * 255.0);
+                                       oct.averages[i] / 20.0 * 255.0);
     }
+    /*/
     
     ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2, 0);
     ofNoFill();
@@ -166,8 +167,8 @@ void ofApp::draw(){
     glPopMatrix();
     
     
-    //glPointSize(2);
-    //glEnable(GL_POINT_SMOOTH);
+    glPointSize(1);
+    glEnable(GL_POINT_SMOOTH);
 
     
     //ofSetColor(255);
