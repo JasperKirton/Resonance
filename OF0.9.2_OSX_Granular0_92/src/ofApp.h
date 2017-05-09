@@ -33,10 +33,9 @@ public:
     void audioOut(float * output, int bufferSize, int nChannels);
     void audioIn(float * input, int bufferSize, int nChannels);
     
+    
     std::tuple<bool, float> isHit(float * bins, int loRange, int hiRange, float threshold);
     
-    float 	* lAudioOut; /* outputs */
-    float   * rAudioOut;
     
     float   * lAudioIn; /* inputs */
     float   * rAudioIn;
@@ -59,9 +58,11 @@ public:
     float *ifftOutput;
     int ifftSize;
     
-    float peakFreq = 0;
+    //for reading sounds from relevant directories
+    string sPath = "samples/snares";
+    
+    float ZCR = 0;
     float centroid = 0;
-    float RMS = 0;
     
     ofxMaxiIFFT ifft;
     ofxMaxiFFT mfft;
@@ -82,12 +83,8 @@ public:
     int current;
     double pos;
     
-    //GUI STUFF
-    bool bHide;
-    
     
     ofTrueTypeFont myfont, myFont2;
-    
     
     //osc
     ofxOscSender sender;
@@ -95,7 +92,7 @@ public:
     
     ofxMaxiFilter myFilter, myFilter2;
     
-    bool isTraining;
+    bool isTraining = true;
     
     float sum = 0;
     
