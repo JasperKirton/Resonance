@@ -8,14 +8,17 @@
 #include "maximilian.h"/* include the lib */
 #include "time.h"
 
+//-------------------------------------------------------------
+ofApp::~ofApp() {
+    
+}
 
 //--------------------------------------------------------------
 void ofApp::setup(){
     
     /* This is stuff you always need.*/
     
-    sender.setup(HOST, SENDPORT);
-    receiver.setup(RECEIVEPORT);
+    sender.setup(HOST, PORT);
     
     
     ofEnableAlphaBlending();
@@ -27,43 +30,62 @@ void ofApp::setup(){
     
     sampleRate 	= 44100; /* Sampling Rate */
     bufferSize	= 512; /* Buffer Size. you have to fill this buffer with sound using the for loop in the audioOut method */
+    lAudioOut			= new float[initialBufferSize];/* outputs */
+    rAudioOut			= new float[initialBufferSize];
+    lAudioIn			= new float[initialBufferSize];/* inputs */
+    rAudioIn			= new float[initialBufferSize];
+    
+    
+    /* This is a nice safe piece of code */
+    memset(lAudioOut, 0, initialBufferSize * sizeof(float));
+    memset(rAudioOut, 0, initialBufferSize * sizeof(float));
+    
+    memset(lAudioIn, 0, initialBufferSize * sizeof(float));
+    memset(rAudioIn, 0, initialBufferSize * sizeof(float));
     
     
     fft.setup(1024, 512, 256);
+    mfft.setup(1024, 512, 256);
+    ifft.setup(1024, 512, 256);
     oct.setup(44100, 1024, 10);
+    
+    ofBackground(0,0,0);
+    
+    
+    Particle::setup(50000, 100);
     
     int current = 0;
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
+    ofSoundStreamSetup(2,2,this, sampleRate, bufferSize, 4); /* this has to happen at the end of setup - it switches on the DAC */
+    isTraining=true;
     
-    ofSetVerticalSync(true);
-    ofEnableAlphaBlending();
-    ofEnableSmoothing();
+    
+    bHide = true;
+    
+    myfont.loadFont("arial.ttf", 18); //requires this to be in bin/data/
+    myFont2.loadFont("arial.ttf", 12); //requires this to be in bin/data/
     
     /* Anything that you would normally find/put in maximilian's setup() method needs to go here. For example, Sample loading.
      
      */
     
-    ofSetSphereResolution(5);
-    
-    isTraining=true;
-    
-    ofBackground(0,0,0);
-    
-    ofSoundStreamSetup(2,2,this, sampleRate, bufferSize, 4); /* this has to happen at the end of setup - it switches on the DAC */
-    
-    Particle::setup(50000, 100);
+    //ofSetSphereResolution(5);
     
     
+    ofSetVerticalSync(true);
+    ofEnableAlphaBlending();
+    ofEnableSmoothing();
+
     
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    //WEKINATOR - use machine learning to learn from existing kicks and snares and get relevant frequencies?
+    
+    
+    //WEKINATOR - use machine learning to learn from existing snares
     if (!isTraining) {
-        
-        
         while(receiver.hasWaitingMessages()){
             // get the next message
             ofxOscMessage m;
@@ -81,6 +103,7 @@ void ofApp::update(){
         }
         
     }
+    
     
     //we have 256 bins so each bin represents roughly 86 hz
     //define kick and snare vars
@@ -103,7 +126,11 @@ void ofApp::update(){
     
     Particle::updateAll(60 * ofGetLastFrameTime());
     
+    //wek
+    ofxOscMessage m;
+    m.setAddress("/wek/inputs");
     
+    sender.sendMessage(m);
     
     
 }
@@ -176,6 +203,67 @@ void ofApp::draw(){
     //ofSetColor(255);
     //ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
     
+    float horizWidth = 500.;
+    float horizOffset = 100;
+    float fftTop = 250;
+    float mfccTop = 350;
+    float chromagramTop = 450;
+    
+    ofSetColor(255, 0, 0,255);
+    
+    //FFT magnitudes:
+    float xinc = horizWidth / fftSize * 2.0;
+    for(int i=0; i < fftSize / 2; i++) {
+        float height = mfft.magnitudes[i] * 100;
+        ofRect(horizOffset + (i*xinc),250 - height,2, height);
+    }
+    myfont.drawString("FFT:", 30, 250);
+    
+    
+    //MFCCs:
+    ofSetColor(0, 255, 0,200);
+    xinc = horizWidth / 13;
+    for(int i=0; i < 13; i++) {
+        float height = mfccs[i] * 100.0;
+        ofRect(horizOffset + (i*xinc),mfccTop - height,40, height);
+        //		cout << mfccs[i] << ",";
+    }
+    myfont.drawString("MFCCs:", 12, mfccTop);
+    
+    
+    //Const-Q:
+    ofSetColor(255, 0, 255,200);
+    xinc = horizWidth / oct.nAverages;
+    for(int i=0; i < oct.nAverages; i++) {
+        float height = oct.averages[i] / 20.0 * 100;
+        ofRect(horizOffset + (i*xinc),chromagramTop - height,2, height);
+    }
+    myfont.drawString("ConstQ:", 12, chromagramTop);
+    
+    
+    ofSetColor(255, 255, 255,255);
+    
+    char peakString[255]; // an array of chars
+    sprintf(peakString, "Peak Frequency: %.2f", peakFreq);
+    myfont.drawString(peakString, 12, chromagramTop + 50);
+    
+    char centroidString[255]; // an array of chars
+    sprintf(centroidString, "Spectral Centroid: %f", centroid);
+    myfont.drawString(centroidString, 12, chromagramTop + 80);
+    
+    char rmsString[255]; // an array of chars
+    sprintf(rmsString, "RMS: %.2f", RMS);
+    myfont.drawString(rmsString, 12, chromagramTop + 110);
+    
+    
+    char numInputsString[255]; // an array of chars
+    sprintf(numInputsString, "Sending %d inputs total", numInputs);
+    myfont.drawString(numInputsString, 450, 100);
+    
+    
+    
+
+    
     
 }
 
@@ -202,18 +290,33 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
     
     for (int i = 0; i < bufferSize; i++){
         
-        /* Stick your maximilian 'play()' code in here ! Declare your objects in testApp.h.
-         
-         For information on how maximilian works, take a look at the example code at
-         
-         http://www.maximilian.strangeloop.co.uk
-         
-         under 'Tutorials'.
-         
-         */
-        
-    
         wave = drumtrack.play();
+        if (mfft.process(wave)) {
+            
+            mfft.magsToDB();
+            oct.calculate(mfft.magnitudesDB);
+            
+            float sum = 0;
+            float maxFreq = 0;
+            int maxBin = 0;
+            
+            for (int i = 0; i < fftSize/2; i++) {
+                sum += mfft.magnitudes[i];
+                if (mfft.magnitudes[i] > maxFreq) {
+                    maxFreq=mfft.magnitudes[i];
+                    maxBin = i;
+                }
+            }
+            centroid = sum / (fftSize / 2);
+            peakFreq = (float)maxBin/fftSize * 44100;
+            
+            
+            mfcc.mfcc(mfft.magnitudes, mfccs);
+        }
+        
+        lAudioOut[i] = 0;
+        rAudioOut[i] = 0;
+    
         if (fft.process(wave)) {
             oct.calculate(fft.magnitudes);
         }
@@ -242,20 +345,20 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 //--------------------------------------------------------------
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
     
+    /* You can just grab this input and stick it in a double, then use it above to create output*/
     
-    // samples are "interleaved"
-    /*
-    for(int i = 0; i < bufferSize; i++){
-        displayBuffer[i] = input[i*nChannels];
-        //wave = input[i*nChannels];
+    float sum = 0;
+    for (int i = 0; i < bufferSize; i++){
         
-        if (fft.process(wave)) {
-            oct.calculate(fft.magnitudes);
-        }
-
+        /* you can also grab the data out of the arrays*/
+        
+        lAudioIn[i] = input[i*2];
+        rAudioIn[i] = input[i*2+1];
+        
+        sum += input[i*2] * input[i*2];
         
     }
-     /*/
+    RMS = sqrt(sum);
     
 }
 
@@ -276,6 +379,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y){
+  
     
     float x1 =  myFilter.lopass(x,0.25);
     float y1 = myFilter2.lopass(y,0.25);
@@ -293,7 +397,6 @@ void ofApp::mouseMoved(int x, int y){
         m.setAddress("/wekinator/control/outputs");
         m.addFloatArg((float)x/ofGetWidth());
         m.addFloatArg((float)y/ofGetHeight());
-        m.addFloatArg((float)current/stretches.size()-1);
         sender.sendMessage(m);
         //cout << "messageSent" << "\n";
     }
@@ -308,8 +411,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if (++current > stretches.size()-1) current = 0;
-    
+  
 }
 
 //--------------------------------------------------------------
