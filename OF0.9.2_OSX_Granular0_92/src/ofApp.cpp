@@ -87,22 +87,45 @@ void ofApp::update(){
     
     //we have 256 bins so each bin represents roughly 86 hz
     //define kick and snare vars
-    bool kBool, sBool;
-    float kMag, sMag;
+    bool kBool, sBool, hBool;
+    float kMag, sMag, hMag;
     std::tie(kBool, kMag) = isHit(fft.magnitudes, 4, 12, 0.1);
     std::tie(sBool, sMag) = isHit(fft.magnitudes, 30, 40, 0.1);
+    std::tie(hBool, hMag) = isHit(fft.magnitudes, 100, 200, 0.1);
+
     //if kick = true
     if (kBool) {
         cout<<kMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 30 , ofGetHeight() / -20), kMag*150);
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2.0) -15 ), kMag*50);
     }
     
     //if snare = true
     if(sBool) {
         cout<<sMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 30 , ofGetHeight() / -20), sMag*300);
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , ofGetHeight() / -10), sMag*100);
     }
     
+    //if high = true
+    
+    if(hBool) {
+        cout<<hMag<<endl;
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2.0) + 30 ), hMag*150);
+
+    }
+    
+    
+    
+//    if (kBool) {
+//        cout<<kMag<<endl;
+//        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2.0) ), kMag*50);
+//    }
+//    
+//    //if snare = true
+//    if(sBool) {
+//        cout<<sMag<<endl;
+//        Particle::addForce(ofVec2f(ofGetWidth() / 20 , ofGetHeight() / -10), sMag*100);
+//    }
+//    
     
     Particle::updateAll(60 * ofGetLastFrameTime());
     
