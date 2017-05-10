@@ -73,7 +73,7 @@ void ofApp::update(){
             if(m.getAddress() == "/wek/outputs"){
                 
                 cout << m.getArgAsFloat(0);
-                speed = ((double ) m.getArgAsFloat(0) * 4.0) - 2.0;
+                speed = ((double ) m.getArgAsFloat(0) * 1.0) - 2.0;
                 grainLength = (m.getArgAsFloat(1) * 0.1) + 0.001;
                 pos = ((double) m.getArgAsFloat(0) * 2.0);
                 
@@ -271,8 +271,8 @@ void ofApp::keyPressed(int key) {
     if(key == 'f')
         ofToggleFullscreen();
     
-    if (key == 'r')
-        ofBackground(204, 0, 0);
+   // if (key == 'r')
+  //      ofBackground(204, 0, 0);
     
     if (key == 'b')
         ofBackground(0, 0, 200);
@@ -280,8 +280,30 @@ void ofApp::keyPressed(int key) {
     if (key == 'g')
         ofBackground(0, 51, 0);
     
+    if (key == 'q')
+        ofBackground(107, 0, 0);
+    if (key == 'w')
+        ofBackground(7, 61, 0);
+    if (key == 'e')
+        ofBackground(0 , 61, 61);
+    if (key == 'r')
+        ofBackground(0, 21, 60);
+    if (key == 't')
+        ofBackground(41, 0, 61);
+    if (key == 'y')
+        ofBackground(61, 0, 51);
+    
     if (key == OF_KEY_DOWN)
         ofBackground(0, 0, 0);
+    
+    if(key == OF_KEY_LEFT)
+        ofBackground(200, 0, 20);
+    
+    if(key == OF_KEY_UP)
+        ofBackground(255, 255, 255);
+    
+    if(key == OF_KEY_RIGHT)
+        ofBackground(0, 0, 255);
 }
 
 
