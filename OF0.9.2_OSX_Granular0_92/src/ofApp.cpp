@@ -87,7 +87,7 @@ void ofApp::train(){
     for (soundCount = 0; soundCount < dir.size(); soundCount++) { // for each sound in folder get centroid and ZCR
         //populate the directory object
         ofLogNotice(dir.getPath(soundCount));
-        if (currentSound.isEnded())
+        if ( (soundCount = 0) || (currentSound.isEnded()) )
             currentSound.load(dir.getPath(soundCount)); //load the file at iterator pointer
             ofSoundSetVolume(0.1);
         
