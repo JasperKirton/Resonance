@@ -24,6 +24,9 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     
     drumtrack.load(ofToDataPath("sais.wav"));
+
+    //drumtrack.load(ofToDataPath("dantest.wav"));
+
     
     sampleRate 	= 44100; /* Sampling Rate */
     bufferSize	= 512; /* Buffer Size. you have to fill this buffer with sound using the for loop in the audioOut method */
@@ -86,7 +89,7 @@ void ofApp::update(){
     //define kick and snare vars
     bool kBool, sBool;
     float kMag, sMag;
-    std::tie(kBool, kMag) = isHit(fft.magnitudes, 5, 8, 0.1);
+    std::tie(kBool, kMag) = isHit(fft.magnitudes, 4, 12, 0.1);
     std::tie(sBool, sMag) = isHit(fft.magnitudes, 30, 40, 0.1);
     //if kick = true
     if (kBool) {
