@@ -23,9 +23,9 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     ofSetFrameRate(60);
     
-    drumtrack.load(ofToDataPath("sais.wav"));
+   // drumtrack.load(ofToDataPath("sais.wav"));
+    drumtrack.load(ofToDataPath("dantest.wav"));
 
-    //drumtrack.load(ofToDataPath("dantest.wav"));
 
     
     sampleRate 	= 44100; /* Sampling Rate */
@@ -94,13 +94,13 @@ void ofApp::update(){
     //if kick = true
     if (kBool) {
         cout<<kMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*150);
+        Particle::addForce(ofVec2f(ofGetWidth() / 30 , ofGetHeight() / -20), kMag*150);
     }
     
     //if snare = true
     if(sBool) {
         cout<<sMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*300);
+        Particle::addForce(ofVec2f(ofGetWidth() / 30 , ofGetHeight() / -20), sMag*300);
     }
     
     
