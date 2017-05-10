@@ -94,13 +94,13 @@ void ofApp::update(){
     //if kick = true
     if (kBool) {
         cout<<kMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*100);
+        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*150);
     }
     
     //if snare = true
     if(sBool) {
         cout<<sMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*200);
+        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*300);
     }
     
     
