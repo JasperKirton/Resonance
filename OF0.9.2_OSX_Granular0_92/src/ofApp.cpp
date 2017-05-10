@@ -13,6 +13,7 @@ ofApp::~ofApp() {
     
 }
 
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -32,20 +33,20 @@ void ofApp::setup(){
     bufferSize	= 512; /* Buffer Size. you have to fill this buffer with sound using the for loop in the audioOut method */
 
     
-    
-    /* This is a nice safe piece of code
-    memset(lAudioOut, 0, initialBufferSize * sizeof(float));
-    memset(rAudioOut, 0, initialBufferSize * sizeof(float));
+    /* This is a nice safe piece of code */
+    //memset(lAudioOut, 0, initialBufferSize * sizeof(float));
+    //memset(rAudioOut, 0, initialBufferSize * sizeof(float));
     
     memset(lAudioIn, 0, initialBufferSize * sizeof(float));
     memset(rAudioIn, 0, initialBufferSize * sizeof(float));
-     */
+
     
     fft.setup(1024, 512, 256);
     mfft.setup(1024, 512, 256);
-    ifft.setup(1024, 512, 256);
     oct.setup(44100, 1024, 10);
     
+    
+
     ofBackground(0,0,0);
     
     
@@ -53,28 +54,6 @@ void ofApp::setup(){
     
     int current = 0;
     
-    isTraining=true;
-    
-    
-    if (isTraining) { //train to listen for snares
-        ofDirectory dir(sPath); //set directory to snares folder
-        dir.listDir();
-        for (int i = 0; i < dir.size(); i ++) { // for each sound in folder get centroid and ZCR
-            //populate the directory object
-            ofLogNotice(dir.getPath(i));
-            
-            centroid = sum / (fftSize / 2);
-            cout << "centr" << endl;
-        
-            ofxOscMessage m;
-            m.setAddress("/wekinator/inputs"); //set address to send data as input
-            m.addFloatArg(centroid);
-            sender.sendMessage(m);
-            cout << "messageSent" << "\n";
-        }
-        
-        isTraining = false;
-    }
     
     
     /* Anything that you would normally find/put in maximilian's setup() method needs to go here. For example, Sample loading.
@@ -90,6 +69,35 @@ void ofApp::setup(){
 
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
     ofSoundStreamSetup(2,2,this, sampleRate, bufferSize, 4); /* this has to happen at the end of setup - it switches on the DAC */
+    
+    if (isTraining) { //train to listen for snares
+        train();
+    }
+    isTraining = false;
+    
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::train(){
+    /* stuff to analyse sounds and train model. plays sound, waits for analysis, sends osc to wek, plays next sound.*/
+    
+    ofDirectory dir(sPath); //set directory to snares folder
+    dir.listDir();
+    for (soundCount = 0; soundCount < dir.size(); soundCount++) { // for each sound in folder get centroid and ZCR
+        //populate the directory object
+        ofLogNotice(dir.getPath(soundCount));
+        if (currentSound.isEnded())
+            currentSound.load(dir.getPath(soundCount)); //load the file at iterator pointer
+            ofSoundSetVolume(0.1);
+        
+        
+        ofxOscMessage m;
+        m.setAddress("/wekinator/inputs"); //set address to send data as input
+        m.addFloatArg(centroid);
+        sender.sendMessage(m);
+        cout << "messageSent" << "\n";
+    }
     
 }
 
@@ -108,7 +116,7 @@ void ofApp::update(){
             
             if(m.getAddress() == "/wek/outputs"){
                 
-                cout << m.getArgAsFloat(0);
+               // cout << m.getArgAsFloat(0);
             }
         }
         
@@ -124,13 +132,13 @@ void ofApp::update(){
     std::tie(sBool, sMag) = isHit(fft.magnitudes, 30, 40, 0.1);
     //if kick = true
     if (kBool) {
-        cout<<kMag<<endl;
+        //cout<<kMag<<endl;
         Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*100);
     }
     
     //if snare = true
     if(sBool) {
-        cout<<sMag<<endl;
+        //cout<<sMag<<endl;
         Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*200);
     }
     
@@ -209,8 +217,9 @@ void ofApp::draw(){
     
     
     
-    
 }
+
+//--------------------------------------------------------------
 
 std::tuple<bool, float> ofApp::isHit(float * bins, int loRange, int hiRange, float threshold) { //return bool and average value of bins
     sum = 0;
@@ -232,49 +241,80 @@ std::tuple<bool, float> ofApp::isHit(float * bins, int loRange, int hiRange, flo
 //--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
     
-    
-    for (int i = 0; i < bufferSize; i++){
-        
-        wave = drumtrack.play();
-        if (mfft.process(wave)) {
+    if (!isTraining){ //if not training then perform analysis on music output
+        for (int i = 0; i < bufferSize; i++){
             
-            mfft.magsToDB();
-            oct.calculate(mfft.magnitudesDB);
             
-            float sum = 0;
-            float maxFreq = 0;
-            int maxBin = 0;
-            
-            for (int i = 0; i < fftSize/2; i++) {
-                sum += mfft.magnitudes[i];
-                if (mfft.magnitudes[i] > maxFreq) {
-                    maxFreq=mfft.magnitudes[i];
-                    maxBin = i;
+                wave = drumtrack.play();
+                /*
+                if (mfft.process(wave)) {
+                    
+                    mfft.magsToDB();
+                    oct.calculate(mfft.magnitudesDB);
+                    
+                    float sum = 0;
+                    float maxFreq = 0;
+                    int maxBin = 0;
+                    
+                    for (int i = 0; i < fftSize/2; i++) {
+                        sum += mfft.magnitudes[i];
+                        if (mfft.magnitudes[i] > maxFreq) {
+                            maxFreq=mfft.magnitudes[i];
+                            maxBin = i;
+                        }
+                    }
+                    centroid = sum / (fftSize / 2);
+                 
                 }
-            }
-            centroid = sum / (fftSize / 2);
+                /*/
+                //lAudioOut[i] = 0;
+                //rAudioOut[i] = 0;
             
-            mfcc.mfcc(mfft.magnitudes, mfccs);
+                if (fft.process(wave)) {
+                    oct.calculate(fft.magnitudes);
+                }
+                
+                //play result
+                mymix.stereo(wave, outputs, 0.5);
+                //output[i*nChannels    ] = outputs[0];
+                //output[i*nChannels + 1] = outputs[1];
+                
+                
+                output[i*nChannels    ] = wave;
+                output[i*nChannels + 1] = wave;
+            }
+    }
+        else {
+            for (int i = 0; i < bufferSize; i++){
+                wave = currentSound.playOnce();
+                if (mfft.process(wave)) {
+                    
+                    mfft.magsToDB();
+                    oct.calculate(mfft.magnitudesDB);
+                    
+                    float sum = 0;
+                    float maxFreq = 0;
+                    int maxBin = 0;
+                    
+                    if (!currentSound.isEnded()) { //if currents sound is still playing
+                        for (int i = 0; i < fftSize/2; i++) { //analyse freqs under nyquist
+                            sum += mfft.magnitudes[i];
+                            if (mfft.magnitudes[i] > maxFreq) {
+                                maxFreq=mfft.magnitudes[i];
+                                maxBin = i;
+                            }
+                        }
+                    }
+                    else { // if currentsound has finished, before moving on to next sound, calculate centroid
+                        centroid = sum / (fftSize / 2);
+                        cout << "centr is " << centroid << endl;
+                        
+                    }
+            
+            
         }
         
-        //lAudioOut[i] = 0;
-        //rAudioOut[i] = 0;
     
-        if (fft.process(wave)) {
-            oct.calculate(fft.magnitudes);
-        }
-
-        
-        
-        //play result
-        mymix.stereo(wave, outputs, 0.5);
-        //output[i*nChannels    ] = outputs[0];
-        //output[i*nChannels + 1] = outputs[1];
-        
-       
-        output[i*nChannels    ] = wave;
-        output[i*nChannels + 1] = wave;
-        
         
         
         
@@ -282,6 +322,8 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         
         
     }
+    
+}
     
 }
 
@@ -308,9 +350,6 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-    isTraining=!isTraining;
-    
-    cout << isTraining;
     
 }
 

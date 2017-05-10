@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "ofxMaxim.h"
-#include "ofxGui.h"
 #include "ofxOsc.h"
 #include <sys/time.h>
 
@@ -33,8 +32,14 @@ public:
     void audioOut(float * output, int bufferSize, int nChannels);
     void audioIn(float * input, int bufferSize, int nChannels);
     
+    void train();
     
-    std::tuple<bool, float> isHit(float * bins, int loRange, int hiRange, float threshold);
+    std::tuple<bool, float> isHit(float * bins, int loRange, int hiRange, float threshold); /* isHit function */
+    
+    bool isTraining = true;
+    float currentSoundPos = 0;
+    int soundCount = 0;
+    ofxMaxiSample currentSound;
     
     
     float   * lAudioIn; /* inputs */
@@ -55,8 +60,6 @@ public:
     /* stick your maximilian stuff below */
     
     int nAverages;
-    float *ifftOutput;
-    int ifftSize;
     
     //for reading sounds from relevant directories
     string sPath = "samples/snares";
@@ -92,7 +95,6 @@ public:
     
     ofxMaxiFilter myFilter, myFilter2;
     
-    bool isTraining = true;
     
     float sum = 0;
     
