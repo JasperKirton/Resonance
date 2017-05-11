@@ -69,7 +69,7 @@ public:
         }
     }
     inline void update(float dt) {
-        force.set(0, 0);
+        force.set(0, 0.2);
         applyFlockingForce();
         applyViscosityForce();
         applyCenteringForce();

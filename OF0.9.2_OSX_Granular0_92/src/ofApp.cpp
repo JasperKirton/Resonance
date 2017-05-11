@@ -59,25 +59,32 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    int kScalar, sScalar; //RMS from filter to scalar
-    
-    
     //we have 256 bins so each bin represents roughly 86 hz
     //define kick and snare vars
-    bool kBool, sBool;
-    float kMag, sMag;
-    std::tie(kBool, kMag) = isHit(fft.magnitudes, 5, 8, 0.1);
-    std::tie(sBool, sMag) = isHit(fft.magnitudes, 30, 40, 0.1);
+    bool kBool, sBool, hBool;
+    float kMag, sMag, hMag;
+    std::tie(kBool, kMag) = isHit(fft.magnitudes, 4, 12, 0.1);
+    std::tie(sBool, sMag) = isHit(fft.magnitudes, 20, 30, 0.1);
+    std::tie(hBool, hMag) = isHit(fft.magnitudes, 100, 200, 0.1);
+    
     //if kick = true
     if (kBool) {
         cout<<kMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*50);
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2.0) -15 ), kMag*50);
     }
     
     //if snare = true
     if(sBool) {
         cout<<sMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*75);
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , ofGetHeight() / 20), sMag*100);
+    }
+    
+    //if high = true
+    
+    if(hBool) {
+        cout<<hMag<<endl;
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2.0) + 30 ), hMag*150);
+        
     }
     
     
@@ -145,10 +152,10 @@ void ofApp::draw(){
     Particle::drawAll();
     glPopMatrix();
     
-    
-    //glPointSize(2);
-    //glEnable(GL_POINT_SMOOTH);
-
+    /*
+    glPointSize(1);
+    glEnable(GL_POINT_SMOOTH);
+     /*/
     
     //ofSetColor(255);
     // ofRect(100, 100, 100, 100);
@@ -270,10 +277,43 @@ int ofApp::getRMS(float * input, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+
+    if(key == 'f')
+        ofToggleFullscreen();
     
-    isTraining=!isTraining;
+    // if (key == 'r')
+    //      ofBackground(204, 0, 0);
     
-    //cout << isTraining;
+    if (key == 'b')
+        ofBackground(0, 0, 200);
+    
+    if (key == 'g')
+        ofBackground(0, 51, 0);
+    
+    if (key == 'q')
+        ofBackground(107, 0, 0);
+    if (key == 'w')
+        ofBackground(7, 61, 0);
+    if (key == 'e')
+        ofBackground(0 , 61, 61);
+    if (key == 'r')
+        ofBackground(0, 21, 60);
+    if (key == 't')
+        ofBackground(41, 0, 61);
+    if (key == 'y')
+        ofBackground(61, 0, 51);
+    
+    if (key == OF_KEY_DOWN)
+        ofBackground(0, 0, 0);
+    
+    if(key == OF_KEY_LEFT)
+        ofBackground(200, 0, 20);
+    
+    if(key == OF_KEY_UP)
+        ofBackground(255, 255, 255);
+    
+    if(key == OF_KEY_RIGHT)
+        ofBackground(0, 0, 255);
     
 }
 
@@ -284,12 +324,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y){
-    
-    float x1 =  myFilter.lopass(x,0.25);
-    float y1 = myFilter2.lopass(y,0.25);
-    
-    
-    
+
 }
 
 //--------------------------------------------------------------
