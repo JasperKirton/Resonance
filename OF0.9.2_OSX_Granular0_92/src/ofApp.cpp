@@ -48,6 +48,8 @@ void ofApp::setup(){
     
     ofBackground(0,0,0);
     
+    isStrobe = false;
+    
     ofSoundStreamSetup(2,2,this, sampleRate, bufferSize, 4); /* this has to happen at the end of setup - it switches on the DAC */
     
     Particle::setup(50000, 100);
@@ -139,10 +141,20 @@ void ofApp::draw(){
     //ofSetColor(255);
     //ofSetColor(160,32,240, 150);
     
+    if (isStrobe)
+    {
+        if ((int)(ofGetFrameNum()) % 2 == 1){
+            ofBackground(255, 255, 255);
+        }
+        else{
+            ofBackground(0, 0, 0);
+        }
+    }
+    
     for(int i=0; i < oct.nAverages; i++) {
     Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
                    100 + ((int)(ofGetFrameNum() * 1.4) % 255),
-                                       ofGetFrameNum() % 255);
+                                      300 + ((int)(ofGetFrameNum() * 0.5) % 255));
                    //oct.averages[i] / 20.0 * 255.0);
     }
     
@@ -161,6 +173,7 @@ void ofApp::draw(){
     // ofRect(100, 100, 100, 100);
     //ofSetColor(255);
     //ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
+    
     
     
 }
@@ -315,7 +328,12 @@ void ofApp::keyPressed(int key){
     if(key == OF_KEY_RIGHT)
         ofBackground(0, 0, 255);
     
+    if(key == OF_KEY_RETURN){
+        isStrobe = !isStrobe;
+        ofBackground(0,0,0);
+     }
 }
+
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){

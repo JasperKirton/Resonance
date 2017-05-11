@@ -33,6 +33,8 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    bool isStrobe;
+    
     
     void audioOut(float * output, int bufferSize, int nChannels);
     void audioIn(float * input, int bufferSize, int nChannels);
