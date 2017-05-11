@@ -39,6 +39,8 @@ public:
     
     std::tuple<bool, float> isHit(float * bins, int loRange, int hiRange, float threshold);
     
+    int getRMS(float * input, int bufferSize, int nChannels);
+    
     float displayBuffer[512];
     
     int		bufferSize;
@@ -61,6 +63,8 @@ public:
     
     /* stick your maximilian stuff below */
     
+    int fftSize;
+    
     double wave,sample,outputs[2];
     maxiSample samp, samp2, samp3, samp4, samp5;
     ofxMaxiSample drumtrack;
@@ -69,14 +73,12 @@ public:
     maxiTimePitchStretch<grainPlayerWin, maxiSample> *ts, *ts2, *ts3, *ts4, *ts5;
     double speed, grainLength;
     
+    
     ofxMaxiFFT fft;
     ofxMaxiFFTOctaveAnalyzer oct;
     int current;
     double pos;
     
-    //osc
-    ofxOscSender sender;
-    ofxOscReceiver receiver;
     
     ofxMaxiFilter myFilter, myFilter2;
     

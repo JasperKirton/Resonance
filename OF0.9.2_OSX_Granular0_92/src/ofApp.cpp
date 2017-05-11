@@ -14,9 +14,6 @@ void ofApp::setup(){
     
     /* This is stuff you always need.*/
     
-    sender.setup(HOST, SENDPORT);
-    receiver.setup(RECEIVEPORT);
-    
     
     ofEnableAlphaBlending();
     ofSetupScreen();
@@ -28,8 +25,10 @@ void ofApp::setup(){
     sampleRate 	= 44100; /* Sampling Rate */
     bufferSize	= 512; /* Buffer Size. you have to fill this buffer with sound using the for loop in the audioOut method */
     
+    fftSize = 1024;
     
     fft.setup(1024, 512, 256);
+    //mfft.setup(1024, 512, 256);
     oct.setup(44100, 1024, 10);
     
     int current = 0;
@@ -60,27 +59,8 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    //WEKINATOR - use machine learning to learn from existing kicks and snares and get relevant frequencies?
-    if (!isTraining) {
-        
-        
-        while(receiver.hasWaitingMessages()){
-            // get the next message
-            ofxOscMessage m;
-            receiver.getNextMessage(&m);
-            
-            // check for mouse moved message
-            if(m.getAddress() == "/wek/outputs"){
-                
-                cout << m.getArgAsFloat(0);
-                speed = ((double ) m.getArgAsFloat(0) * 4.0) - 2.0;
-                grainLength = (m.getArgAsFloat(1) * 0.1) + 0.001;
-                pos = ((double) m.getArgAsFloat(0) * 2.0);
-                
-            }
-        }
-        
-    }
+    int kScalar, sScalar; //RMS from filter to scalar
+    
     
     //we have 256 bins so each bin represents roughly 86 hz
     //define kick and snare vars
@@ -91,13 +71,13 @@ void ofApp::update(){
     //if kick = true
     if (kBool) {
         cout<<kMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*100);
+        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), kMag*50);
     }
     
     //if snare = true
     if(sBool) {
         cout<<sMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*200);
+        Particle::addForce(ofVec2f(ofGetWidth() / 2 , ofGetHeight() / 2), sMag*75);
     }
     
     
@@ -198,6 +178,7 @@ std::tuple<bool, float> ofApp::isHit(float * bins, int loRange, int hiRange, flo
 //--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
     
+    float sum = 0;
     
     for (int i = 0; i < bufferSize; i++){
         
@@ -211,10 +192,15 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
          
          */
         
+        
     
         wave = drumtrack.play();
         if (fft.process(wave)) {
-            oct.calculate(fft.magnitudes);
+            
+            fft.magsToDB();  // so all energy becomes relative to DB scale (more consistent for different tracks)
+            oct.calculate(fft.magnitudesDB);
+            
+            
         }
 
         
@@ -228,13 +214,18 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         output[i*nChannels    ] = wave;
         output[i*nChannels + 1] = wave;
         
-        
+        /*
+        double filteredSound[2];
+        filteredSound[1] = myFilter.lopass(wave, 0.1);
+        sum += filteredSound[i*2] * output[i*2];
+        /*/
         
         
         /* You may end up with lots of outputs. add them here */
         
         
     }
+    
     
 }
 
@@ -258,6 +249,24 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
     
 }
 
+//--------------------------------------------------------------
+/*
+int ofApp::getRMS(float * input, int bufferSize, int nChannels){
+    
+    float sum = 0;
+    for (int i = 0; i < bufferSize; i++){
+        
+        filteredSound = filter.lopass(input, 0.1)
+        sum += input[i*2] * input[i*2];
+        
+    }
+    
+    
+    return sqrt(sum);
+    
+    //case
+}
+/*/
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
@@ -279,23 +288,6 @@ void ofApp::mouseMoved(int x, int y){
     float x1 =  myFilter.lopass(x,0.25);
     float y1 = myFilter2.lopass(y,0.25);
     
-    if (isTraining) {
-        
-        speed = ((double ) x1 / ofGetWidth() * 4.0) - 2.0;
-        grainLength = ((double) y1 / ofGetHeight() * 0.1) + 0.001;
-        if (grainLength < 0.01 ) grainLength = 0.01;
-        if (grainLength > 0.4 ) grainLength = 0.4;
-        pos = ((double) x1 / ofGetWidth() * 2.0);
-        //	cout << pos << endl;
-        
-        ofxOscMessage m;
-        m.setAddress("/wekinator/control/outputs");
-        m.addFloatArg((float)x/ofGetWidth());
-        m.addFloatArg((float)y/ofGetHeight());
-        m.addFloatArg((float)current/stretches.size()-1);
-        sender.sendMessage(m);
-        //cout << "messageSent" << "\n";
-    }
     
     
 }
@@ -307,7 +299,6 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if (++current > stretches.size()-1) current = 0;
     
 }
 
