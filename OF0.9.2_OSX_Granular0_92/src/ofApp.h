@@ -9,13 +9,6 @@
 
 #include "Particle.h"
 
-#define HOST "localhost"
-#define RECEIVEPORT 12000
-#define SENDPORT 6448
-
-typedef hannWinFunctor grainPlayerWin;
-
-
 
 class ofApp : public ofBaseApp{
     
@@ -34,6 +27,7 @@ public:
     void gotMessage(ofMessage msg);
     
     bool isStrobe;
+    bool isStrobe2;
     
     
     void audioOut(float * output, int bufferSize, int nChannels);
@@ -41,22 +35,10 @@ public:
     
     std::tuple<bool, float> isHit(float * bins, int loRange, int hiRange, float threshold);
     
-    int getRMS(float * input, int bufferSize, int nChannels);
     
     float displayBuffer[512];
     
     int		bufferSize;
-    
-    /* stick you maximilian declarations below
-     
-     For information on how maximilian works, take a look at the example code at
-     
-     http://www.maximilian.strangeloop.co.uk
-     
-     under 'Tutorials'.
-     
-     
-     */
     
     
     int		initialBufferSize; /* buffer size */
@@ -65,15 +47,9 @@ public:
     
     /* stick your maximilian stuff below */
     
-    int fftSize;
-    
     double wave,sample,outputs[2];
-    maxiSample samp, samp2, samp3, samp4, samp5;
     ofxMaxiSample drumtrack;
-    vector<maxiTimePitchStretch<grainPlayerWin, maxiSample>*> stretches;
     maxiMix mymix;
-    maxiTimePitchStretch<grainPlayerWin, maxiSample> *ts, *ts2, *ts3, *ts4, *ts5;
-    double speed, grainLength;
     
     
     ofxMaxiFFT fft;
@@ -82,11 +58,7 @@ public:
     double pos;
     
     
-    ofxMaxiFilter myFilter, myFilter2;
-    
-    bool isTraining;
-    
-    float sum = 0;
+    float sum;
     
 };
 

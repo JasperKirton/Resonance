@@ -1,5 +1,8 @@
 #include "Particle.h"
 
+/* code modified from original by github.com/kylemcdonald/openFrameworksDemos 
+ and help from github.com/shiffman/The-Nature-of-Code-Examples */
+
 vector<Force>
 Particle::forces;
 
@@ -29,7 +32,7 @@ void Particle::setup(int n, float radius) {
     globalOffset.set(1. / 3, 2. / 3);
     speed = 15;
     spread = 20;
-    viscosity = .2;
+    viscosity = .21;
     independence = 1;
     neighborhood = 200;
     confusion = .1;

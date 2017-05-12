@@ -2,6 +2,8 @@
 
 #include "ofMain.h"
 
+/* code modified from original by github.com/kylemcdonald/openFrameworksDemos
+ and help from github.com/shiffman/The-Nature-of-Code-Examples */
 
 inline void randomize(ofVec2f& v) {
     v.x = ofRandomf();
@@ -69,7 +71,7 @@ public:
         }
     }
     inline void update(float dt) {
-        force.set(0, 0.2);
+        force.set(0, 0.23); //downwards pos offset to account for big kicks!
         applyFlockingForce();
         applyViscosityForce();
         applyCenteringForce();

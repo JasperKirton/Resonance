@@ -20,18 +20,16 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     ofSetFrameRate(60);
     
-    drumtrack.load(ofToDataPath("sais.wav"));
+    drumtrack.load(ofToDataPath("sais.wav")); //demo track by Floating Points, Eglo Records, 2011
     
     sampleRate 	= 44100; /* Sampling Rate */
     bufferSize	= 512; /* Buffer Size. you have to fill this buffer with sound using the for loop in the audioOut method */
     
-    fftSize = 1024;
     
     fft.setup(1024, 512, 256);
     //mfft.setup(1024, 512, 256);
     oct.setup(44100, 1024, 10);
     
-    int current = 0;
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
     
     ofSetVerticalSync(true);
@@ -44,7 +42,6 @@ void ofApp::setup(){
     
     ofSetSphereResolution(5);
     
-    isTraining=true;
     
     ofBackground(0,0,0);
     
@@ -65,28 +62,25 @@ void ofApp::update(){
     //define kick and snare vars
     bool kBool, sBool, hBool;
     float kMag, sMag, hMag;
-    std::tie(kBool, kMag) = isHit(fft.magnitudes, 4, 12, 0.1);
-    std::tie(sBool, sMag) = isHit(fft.magnitudes, 20, 30, 0.1);
-    std::tie(hBool, hMag) = isHit(fft.magnitudes, 100, 200, 0.1);
-    
+    std::tie(kBool, kMag) = isHit(fft.magnitudesDB, 4, 12, 0.1);
+    std::tie(sBool, sMag) = isHit(fft.magnitudesDB, 20, 30, 0.1);
+    std::tie(hBool, hMag) = isHit(fft.magnitudesDB, 60, 100, 0.1);
     //if kick = true
     if (kBool) {
-        cout<<kMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2.0) -15 ), kMag*50);
+        //cout<<kMag<<endl;
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2) -15 ), kMag*50); //position kick down the bottom
     }
     
     //if snare = true
     if(sBool) {
-        cout<<sMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 20 , ofGetHeight() / 20), sMag*100);
+        //cout<<sMag<<endl;
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 20) -50 ), sMag*55); //position snare in the centre (roughly)
     }
     
     //if high = true
-    
     if(hBool) {
-        cout<<hMag<<endl;
-        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 2.0) + 30 ), hMag*150);
-        
+        //cout<<hMag<<endl;
+        Particle::addForce(ofVec2f(ofGetWidth() / 20 , (ofGetHeight() / 20) -300 ), hMag*50); //position highs up top
     }
     
     
@@ -100,48 +94,8 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    /* You can use any of the data from audio received and audiorequested to draw stuff here.
-     Importantly, most people just use the input and output arrays defined above.
-     Clever people don't do this. This bit of code shows that by default, each signal is going to flip
-     between -1 and 1. You need to account for this somehow. Get the absolute value for example.
-     */
     
-    /*
-    ofSetColor(160,32,240, 150);
-    
-    ofNoFill();
-    for(int i=0; i < oct.nAverages; i++) {
-        ofSetColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
-                   100 + ((int)(ofGetFrameNum() * 1.4) % 255),
-                   ofGetFrameNum() % 255,
-                   oct.averages[i] / 20.0 * 255.0);
-        glPushMatrix();
-        glTranslatef(ofGetWidth()/2,ofGetHeight()/2, 0);
-        glRotatef(0.01 * ofGetFrameNum() * speed * i, 0.01 * ofGetFrameNum() * speed * i,0.01 * ofGetFrameNum() * speed * i, 0);
-        ofDrawSphere(0, 0, i * 5);
-        glPopMatrix();
-    }
-    /*/
-    
-    /*
-    for (int i = 0; i < oct.nAverages; i++){
-        //ofSetColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
-         //          100 + ((int)(ofGetFrameNum() * 1.4) % 255),
-           //       ofGetFrameNum() % 255,
-            //      oct.averages[i] / 20.0 * 255.0);
-        ofDrawRectangle(i*((float)ofGetWidth()/oct.nAverages), ofGetHeight(), ((float)ofGetWidth()/oct.nAverages), -oct.averages[i]*100);
-        //ofLog()<< ofToString(i) + "  " + ofToString(oct.averages[i]);
-        
-    }
-     /*/
-    
-   // ofLog()<< ofToString(isHit(oct.averages, 0, 10, 0.15));
-    
-    //particle code
-    //ofSetColor(255);
-    //ofSetColor(160,32,240, 150);
-    
-    if (isStrobe)
+    if (isStrobe) //turns on the strobe when enter/return is pressed
     {
         if ((int)(ofGetFrameNum()) % 2 == 1){
             ofBackground(255, 255, 255);
@@ -151,11 +105,23 @@ void ofApp::draw(){
         }
     }
     
-    for(int i=0; i < oct.nAverages; i++) {
-    Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
-                   100 + ((int)(ofGetFrameNum() * 1.4) % 255),
-                                      300 + ((int)(ofGetFrameNum() * 0.5) % 255));
-                   //oct.averages[i] / 20.0 * 255.0);
+    if (isStrobe2)
+    {
+        for(int i=0; i < oct.nAverages; i++) {
+        Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
+                       100 + ((int)(ofGetFrameNum() * 1.1) % 245), //avoid super bright greens
+                                          300 + ((int)(ofGetFrameNum() * 0.5) % 255),
+                       (oct.averages[i] / 20.0) * 255.0); //transparency for strobe
+        }
+    }
+    else
+    {
+    
+        for(int i=0; i < oct.nAverages; i++) {
+            Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
+                                               100 + ((int)(ofGetFrameNum() * 1.1) % 245), //avoid super bright greens
+                                               300 + ((int)(ofGetFrameNum() * 0.5) % 255));
+        }
     }
     
     ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2, 0);
@@ -168,13 +134,7 @@ void ofApp::draw(){
     glPointSize(1);
     glEnable(GL_POINT_SMOOTH);
      /*/
-    
-    //ofSetColor(255);
-    // ofRect(100, 100, 100, 100);
-    //ofSetColor(255);
-    //ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
-    
-    
+
     
 }
 
@@ -202,18 +162,8 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
     
     for (int i = 0; i < bufferSize; i++){
         
-        /* Stick your maximilian 'play()' code in here ! Declare your objects in testApp.h.
-         
-         For information on how maximilian works, take a look at the example code at
-         
-         http://www.maximilian.strangeloop.co.uk
-         
-         under 'Tutorials'.
-         
-         */
         
-        
-    
+           // this code is for demo playback (track loaded in through drumtrack)
         wave = drumtrack.play();
         if (fft.process(wave)) {
             
@@ -234,12 +184,6 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         output[i*nChannels    ] = wave;
         output[i*nChannels + 1] = wave;
         
-        /*
-        double filteredSound[2];
-        filteredSound[1] = myFilter.lopass(wave, 0.1);
-        sum += filteredSound[i*2] * output[i*2];
-        /*/
-        
         
         /* You may end up with lots of outputs. add them here */
         
@@ -253,49 +197,33 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 void ofApp::audioIn(float * input, int bufferSize, int nChannels){
     
     
-    // samples are "interleaved"
-    /*
+    /* uncomment this code for input through soundcard
+    
     for(int i = 0; i < bufferSize; i++){
         displayBuffer[i] = input[i*nChannels];
-        //wave = input[i*nChannels];
+        wave = input[i*nChannels];
         
         if (fft.process(wave)) {
-            oct.calculate(fft.magnitudes);
+             fft.magsToDB();  // so all energy becomes relative to DB scale (more consistent for different tracks)
+             oct.calculate(fft.magnitudesDB);
         }
-
-        
+     
+     
     }
-     /*/
+    /*/
     
 }
 
-//--------------------------------------------------------------
-/*
-int ofApp::getRMS(float * input, int bufferSize, int nChannels){
-    
-    float sum = 0;
-    for (int i = 0; i < bufferSize; i++){
-        
-        filteredSound = filter.lopass(input, 0.1)
-        sum += input[i*2] * input[i*2];
-        
-    }
-    
-    
-    return sqrt(sum);
-    
-    //case
-}
-/*/
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    
 
     if(key == 'f')
         ofToggleFullscreen();
     
-    // if (key == 'r')
-    //      ofBackground(204, 0, 0);
+    if (key == 'r')
+        ofBackground(204, 0, 0);
     
     if (key == 'b')
         ofBackground(0, 0, 200);
@@ -329,9 +257,15 @@ void ofApp::keyPressed(int key){
         ofBackground(0, 0, 255);
     
     if(key == OF_KEY_RETURN){
-        isStrobe = !isStrobe;
-        ofBackground(0,0,0);
+        isStrobe = !isStrobe; //toggle the strobe
+        ofBackground(0,0,0); //switch to black when off
      }
+    
+    if(key == OF_KEY_SHIFT){
+        isStrobe2 = !isStrobe2; //toggle the second strobe (transparency)
+        ofBackground(0,0,0); //switch to black when off
+    }
+    
 }
 
 
