@@ -213,6 +213,7 @@ void ofApp::keyPressed(int key){ //here is the code for various functions of the
 
     if(key == 'f')
         ofToggleFullscreen();
+        ofHideCursor();
     
     if (key == 'r')
         ofBackground(204, 0, 0);
