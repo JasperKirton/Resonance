@@ -180,7 +180,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "275"
-            endingLineNumber = "275">
+            endingLineNumber = "275"
+            landmarkName = "ofApp::keyReleased(int key)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
