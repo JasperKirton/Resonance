@@ -181,7 +181,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "275"
             endingLineNumber = "275"
-            landmarkName = "ofApp::keyReleased(int key)"
+            landmarkName = "ofApp::mouseDragged(int x, int y, int button)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -197,7 +197,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "92"
             endingLineNumber = "92"
-            landmarkName = "ofApp::update()"
+            landmarkName = "ofApp::draw()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

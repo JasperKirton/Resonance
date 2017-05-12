@@ -1,9 +1,3 @@
- /* This is modified from an example of how to integrate maximilain into openFrameworks,
- including using audio received for input and audio requested for output.
- 
- 
- */
-
 #include "ofApp.h"
 #include "maximilian.h"/* include the lib */
 #include "time.h"
@@ -27,7 +21,6 @@ void ofApp::setup(){
     
     
     fft.setup(1024, 512, 256);
-    //mfft.setup(1024, 512, 256);
     oct.setup(44100, 1024, 10);
     
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
@@ -107,11 +100,11 @@ void ofApp::draw(){
     
     if (isStrobe2)
     {
-        for(int i=0; i < oct.nAverages; i++) {
+        for(int i=0; i < oct.nAverages; i++) { //cycle through the (most of the) colours, with offsets for aesthetic refining. Credit to Mick Grierson for the tip.
         Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
                        100 + ((int)(ofGetFrameNum() * 1.1) % 245), //avoid super bright greens
                                           300 + ((int)(ofGetFrameNum() * 0.5) % 255),
-                       (oct.averages[i] / 20.0) * 255.0); //transparency for strobe
+                       (oct.averages[i] / 20.0) * 255.0); //transparency for strobe (reactive to octave energy)
         }
     }
     else
@@ -119,7 +112,7 @@ void ofApp::draw(){
     
         for(int i=0; i < oct.nAverages; i++) {
             Particle::particleColour = ofColor(200 + ((int)(ofGetFrameNum() * 0.8) % 255),
-                                               100 + ((int)(ofGetFrameNum() * 1.1) % 245), //avoid super bright greens
+                                               100 + ((int)(ofGetFrameNum() * 1.1) % 245),
                                                300 + ((int)(ofGetFrameNum() * 0.5) % 255));
         }
     }
@@ -216,8 +209,7 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-    
+void ofApp::keyPressed(int key){ //here is the code for various functions of the keyboard that can be used when the program is running.
 
     if(key == 'f')
         ofToggleFullscreen();
